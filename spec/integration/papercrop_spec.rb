@@ -27,9 +27,11 @@ describe "Image crop" do
     find("#picture_crop_y", visible: false).set "200"
     find("#picture_crop_w", visible: false).set "400"
     find("#picture_crop_h", visible: false).set "300"
+    picture_updated_at = Landscape.last.picture_updated_at
 
     click_button "Crop image"
 
+    expect(Landscape.last.picture_updated_at).to_not eq(picture_updated_at)
     expect(compare_images(expected_mountains_img_path, Landscape.last.picture.path(:medium)).round(2)).to eq(0.0)
   end
 end
