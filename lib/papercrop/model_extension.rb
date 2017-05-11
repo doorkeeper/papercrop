@@ -10,9 +10,9 @@ module Papercrop
       # You can also define an initial aspect ratio for the crop and preview box through opts[:aspect]
       #
       #   crop_attached_file :avatar, :aspect => "4:3"
-      # 
+      #
       # Or unlock it
-      # 
+      #
       #   crop_attached_file :avatar, :aspect => false
       #
       # @param attachment_name [Symbol] Name of the desired attachment to crop
@@ -51,7 +51,7 @@ module Papercrop
       # Returns a valid and normalized value for aspect ratio
       # It will return 1.. if aspect is nil or a invalid string
       # @param aspect [Range, String, FalseClass]
-      # 
+      #
       # @return [Range]
       def normalize_aspect(aspect)
         if aspect.kind_of?(String) && aspect =~ Papercrop::RegExp::ASPECT
@@ -89,9 +89,9 @@ module Papercrop
       def image_geometry(attachment_name, style = :original)
         @geometry                  ||= {}
         @geometry[attachment_name] ||= {}
-        
+
         path = (self.send(attachment_name).options[:storage] == :filesystem) ? self.send(attachment_name).path(style) : self.send(attachment_name).url(style)
-        
+
         @geometry[attachment_name][style] ||= Paperclip::Geometry.from_file(path)
       end
 
