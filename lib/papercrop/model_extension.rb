@@ -19,6 +19,7 @@ module Papercrop
       # @param opts [Hash]
       # @option opts [Range, String, FlaseClass] :aspect
       def crop_attached_file(attachment_name, opts = {})
+        attachments_to_crop << attachment_name
         opts = opts.dup
 
         [:crop_x, :crop_y, :crop_w, :crop_h, :original_w, :original_h, :box_w, :aspect, :cropped_geometries].each do |a|
@@ -44,9 +45,12 @@ module Papercrop
           processors << :papercrop
         end
 
-        before_update :"reprocess_to_crop_#{attachment_name}_attachment"
+        before_update :reprocess_to_crop_attachments
       end
 
+      def attachments_to_crop
+        @attachments_to_crop ||= []
+      end
 
       # Returns a valid and normalized value for aspect ratio
       # It will return 1.. if aspect is nil or a invalid string
@@ -95,19 +99,6 @@ module Papercrop
         @geometry[attachment_name][style] ||= Paperclip::Geometry.from_file(path)
       end
 
-
-      # Uses method missing to responding the model callback
-      def method_missing(method, *args)
-        if method.to_s =~ Papercrop::RegExp::CALLBACK
-          reprocess_cropped_attachment(
-            method.to_s.scan(Papercrop::RegExp::CALLBACK).flatten.first.to_sym
-          )
-        else
-          super
-        end
-      end
-
-
       # Sets all cropping attributes to nil
       # @param  attachment_name [Symbol]
       def reset_crop_attributes_of(attachment_name)
@@ -117,6 +108,11 @@ module Papercrop
       end
 
       private
+        def reprocess_to_crop_attachments
+          self.class.attachments_to_crop.each do |attachment|
+            reprocess_cropped_attachment(attachment)
+          end
+        end
 
         # Saves the attachment if the crop attributes are present
         # @param  attachment_name [Symbol]

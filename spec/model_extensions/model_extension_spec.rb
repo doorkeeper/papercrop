@@ -41,7 +41,7 @@ describe "Model Extension" do
 
   it "defines an after update callback" do
     @landscape._update_callbacks.map do |e|
-      expect(e.instance_values['filter']).to eq(:reprocess_to_crop_picture_attachment) 
+      expect(e.instance_values['filter']).to eq(:reprocess_to_crop_attachments) 
     end
   end
 
